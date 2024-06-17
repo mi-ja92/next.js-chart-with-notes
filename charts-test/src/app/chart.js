@@ -99,9 +99,11 @@ const MyChart = ({ notes }) => {
   };
 
   return (
-    <div>
-      <canvas ref={chartRef}></canvas>
-      <form onSubmit={handleSubmitNote}>
+    <div className='w-full  flex flex-col justify-center items-center'>
+    <div className='w-1/2'>
+      <canvas ref={chartRef}></canvas></div>
+      <div className=' border border-slate-400 rounded p-4 my-4'>
+      <form className= 'flex flex-col gap-4' onSubmit={handleSubmitNote}>
         <input
           type="text"
           placeholder="Note Text"
@@ -121,13 +123,14 @@ const MyChart = ({ notes }) => {
           onChange={e => setYValue(e.target.value)}
         />
         <button
-          className="border border-black rounded p-1 m-2 hover:bg-black hover:text-white"
+          className="border border-black rounded py-1 my-2 hover:bg-black hover:text-white w-24"
           type="submit"
         >
           Add Note
         </button>
       </form>
-      <div>
+      </div>
+      <div className='border border-slate-400 rounded p-4'>
         {notes.map(note => (
           <div key={note.id}>
             <span>
