@@ -1,16 +1,21 @@
-'use client'
+'use client';
 import React, { useRef, useState, useEffect } from 'react';
 import { Chart } from 'chart.js';
 import annotationPlugin from 'chartjs-plugin-annotation';
+import { addNote, deleteNote } from '../../api';
+import { v4 } from 'uuid';
+import { useRouter } from 'next/navigation';
 
 Chart.register(annotationPlugin);
 
-const MyChart = () => {
+const MyChart = ({ notes }) => {
   const chartRef = useRef(null);
-  const [annotations, setAnnotations] = useState([]);
+
   const [noteText, setNoteText] = useState('');
   const [xValue, setXValue] = useState('');
   const [yValue, setYValue] = useState('');
+
+  const router = useRouter();
 
   useEffect(() => {
     const ctx = chartRef.current.getContext('2d');
@@ -18,7 +23,15 @@ const MyChart = () => {
     const myChart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        labels: [
+          'January',
+          'February',
+          'March',
+          'April',
+          'May',
+          'June',
+          'July',
+        ],
         datasets: [
           {
             label: 'My First Dataset',
@@ -32,7 +45,7 @@ const MyChart = () => {
       options: {
         plugins: {
           annotation: {
-            annotations: annotations.map((ann) => ({
+            annotations: notes.map(ann => ({
               id: ann.id,
               type: 'label',
               xValue: ann.xValue,
@@ -58,55 +71,74 @@ const MyChart = () => {
     return () => {
       myChart.destroy();
     };
-  }, [annotations]);
+  }, [notes]);
 
-  const addAnnotation = () => {
-    const newAnnotation = {
-      id: Date.now(),
+//   const removeAnnotation = id => {
+//     setAnnotations(prevAnnotations =>
+//       prevAnnotations.filter(ann => ann.id !== id)
+//     );
+//   };
+
+  const handleSubmitNote = async e => {
+    e.preventDefault();
+    await addNote({
+      id: v4(),
       text: noteText,
       xValue: xValue,
-      yValue: parseInt(yValue),
-    };
-
-    setAnnotations((prevAnnotations) => [...prevAnnotations, newAnnotation]);
+      yValue: yValue,
+    });
     setNoteText('');
     setXValue('');
     setYValue('');
+    router.refresh();
   };
 
-  const removeAnnotation = (id) => {
-    setAnnotations((prevAnnotations) => prevAnnotations.filter((ann) => ann.id !== id));
+  const handleDeleteNote = async id => {    
+    await deleteNote(id);
+    router.refresh();
   };
 
   return (
     <div>
       <canvas ref={chartRef}></canvas>
-      <input
-        type="text"
-        placeholder="Note Text"
-        value={noteText}
-        onChange={(e) => setNoteText(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="X Value"
-        value={xValue}
-        onChange={(e) => setXValue(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Y Value"
-        value={yValue}
-        onChange={(e) => setYValue(e.target.value)}
-      />
-      <button className='border border-black rounded p-1 m-2 hover:bg-black hover:text-white'  onClick={addAnnotation}>Add Note</button>
+      <form onSubmit={handleSubmitNote}>
+        <input
+          type="text"
+          placeholder="Note Text"
+          value={noteText}
+          onChange={e => setNoteText(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="X Value"
+          value={xValue}
+          onChange={e => setXValue(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Y Value"
+          value={yValue}
+          onChange={e => setYValue(e.target.value)}
+        />
+        <button
+          className="border border-black rounded p-1 m-2 hover:bg-black hover:text-white"
+          type="submit"
+        >
+          Add Note
+        </button>
+      </form>
       <div>
-        {annotations.map((ann) => (
-          <div key={ann.id}>
+        {notes.map(note => (
+          <div key={note.id}>
             <span>
-              {ann.text} (X: {ann.xValue}, Y: {ann.yValue})
+              {note.text} (X: {note.xValue}, Y: {note.yValue})
             </span>
-            <button className='border border-black rounded p-1 m-2 hover:bg-black hover:text-white'  onClick={() => removeAnnotation(ann.id)}>Remove</button>
+            <button
+              className="border border-black rounded p-1 m-2 hover:bg-black hover:text-white"
+              onClick={() => handleDeleteNote(note.id)}
+            >
+              Remove
+            </button>
           </div>
         ))}
       </div>
@@ -115,6 +147,3 @@ const MyChart = () => {
 };
 
 export default MyChart;
-
-
-
