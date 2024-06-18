@@ -73,11 +73,6 @@ const MyChart = ({ notes }) => {
     };
   }, [notes]);
 
-//   const removeAnnotation = id => {
-//     setAnnotations(prevAnnotations =>
-//       prevAnnotations.filter(ann => ann.id !== id)
-//     );
-//   };
 
   const handleSubmitNote = async e => {
     e.preventDefault();

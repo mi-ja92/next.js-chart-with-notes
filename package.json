@@ -1,5 +1,10 @@
 {
   "dependencies": {
+    "@prisma/client": "^5.15.0",
+    "@vercel/postgres": "^0.8.0",
     "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "prisma": "^5.15.0"
   }
 }

@@ -3,7 +3,9 @@ import LineChart from "./linechart";
 import BarChart from "./barchart";
 import MyChart from "./chart";
 import {getNotes} from '../../api'
-export default async function Home() {
+import Main from "./main";
+
+export default async function Home(props) {
 const notes = await getNotes()
 
   return (
@@ -11,6 +13,7 @@ const notes = await getNotes()
   <div className='w-full h-screen flex items-center justify-center pt-10'>
   {/* <LineChart />
   <BarChart/> */}
+  <Main/>
   <MyChart notes={notes}/></div>
 </div>
   );
